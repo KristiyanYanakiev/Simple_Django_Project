@@ -1,7 +1,8 @@
 from idlelib.rpc import request_queue
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
+from fruitipediaApp.fruits.forms import CategoryCreateForm
 from fruitipediaApp.fruits.models import Fruit
 
 
@@ -10,7 +11,20 @@ def index(request):
     return render(request, 'common/index.html')
 
 def create_category(request):
-    return render(request, 'categories/create-category.html')
+    if request.method == "GET":
+        form = CategoryCreateForm()
+    else:
+        form = CategoryCreateForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'categories/create-category.html', context)
 
 
 def dashboard(request):
